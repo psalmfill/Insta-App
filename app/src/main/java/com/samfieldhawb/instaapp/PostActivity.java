@@ -66,17 +66,23 @@ public class PostActivity extends AppCompatActivity {
             mDescriptionField.setError("Description cannot be empty");
             return;
         }
-        StorageReference filePath = mStorageReference.child("PostImages").child(mUri.getLastPathSegment());
+        final StorageReference filePath = mStorageReference.child("PostImages").child(mUri.getLastPathSegment());
         filePath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
-                DatabaseReference newPost = mReference.push();
-                newPost.child("title").setValue(name);
-                newPost.child("desc").setValue(desc);
-                newPost.child("image").setValue(downloadUrl.toString());
-                Toast.makeText(PostActivity.this,"Upload Completed",Toast.LENGTH_LONG).show();
-            }
+
+                filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        DatabaseReference newPost = mReference.push();
+                        newPost.child("title").setValue(name);
+                        newPost.child("desc").setValue(desc);
+                        newPost.child("image").setValue(uri.toString());
+                        Toast.makeText(PostActivity.this,"Upload Completed",Toast.LENGTH_LONG).show();
+
+                    }
+                });
+                   }
         });
     }
 }
