@@ -11,6 +11,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -21,6 +23,8 @@ public class PostActivity extends AppCompatActivity {
     Uri mUri = null;
     ImageButton mImageButton;
     private EditText mNameField,mDescriptionField;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +34,8 @@ public class PostActivity extends AppCompatActivity {
         mNameField = findViewById(R.id.edit_name);
         mDescriptionField = findViewById(R.id.edit_description);
         mStorageReference = FirebaseStorage.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance();
+        mReference = FirebaseDatabase.getInstance().getReference().child("InstaApp");
     }
 
     public void imageButtonClicked(View view){
@@ -49,8 +55,8 @@ public class PostActivity extends AppCompatActivity {
     }
 
     public void submitButtonClicked(View view){
-        String name = mNameField.getText().toString().trim();
-        String desc = mDescriptionField.getText().toString().trim();
+        final String name = mNameField.getText().toString().trim();
+        final String desc = mDescriptionField.getText().toString().trim();
 
         if(name.isEmpty()){
             mNameField.setError("Name cannot e empty");
@@ -64,7 +70,11 @@ public class PostActivity extends AppCompatActivity {
         filePath.putFile(mUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-              Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                DatabaseReference newPost = mReference.push();
+                newPost.child("title").setValue(name);
+                newPost.child("desc").setValue(desc);
+                newPost.child("image").setValue(downloadUrl.toString());
                 Toast.makeText(PostActivity.this,"Upload Completed",Toast.LENGTH_LONG).show();
             }
         });
