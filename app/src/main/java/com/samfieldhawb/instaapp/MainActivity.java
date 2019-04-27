@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser()==null){
-                    Intent loginIntent = new Intent(getApplicationContext(),RegisterActivity.class);
+                    Intent loginIntent = new Intent(getApplicationContext(),LoginActivity.class);
                     //prvent user from returning here if backbutton is press
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(loginIntent);

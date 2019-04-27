@@ -48,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
             mNameField.setError("Name cannot be empty");
             return;
         }
-        if(email.isEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if(email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             mEmailField.setError("Invalid Email");
             return;
         }
